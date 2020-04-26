@@ -1,0 +1,105 @@
+<template>
+    <div id="mainform">
+        <input type="hidden" id="id" name="id" value="0">
+
+        <categories-with-projects :data=$data   v-on:prj-selected="prjSelected"
+                                                v-on:obj-selected="objSelected" > </categories-with-projects>
+        <div class="form-group">
+            <label>Date:&nbsp;</label><input type="date" id="entryDatum" name="entryDatum"
+                                             v-model="entryData.entryDatum" placeholder="2020-01-25" > &nbsp;
+
+            <label>From:&nbsp;</label><input type="time" id="startTime" name="startTime"
+                                             v-model="entryData.startTime" placeholder="15:12"> &nbsp;
+
+            <label>To:&nbsp;</label><input type="time" id="endTime" name="endTime"
+                                           v-model="entryData.endTime" placeholder="15:28"> &nbsp;
+
+        </div>
+        <div class="form-group">
+            <label>Description:&nbsp;</label><input type="text" style="width: 40em"
+                                                    v-model="entryData.description" id="description" name="description"
+                                                    placeholder="wandelen + winkelen + brood halen">
+        </div>
+        <div class="form-group">
+            <div style="float: left">
+                <button type="button" class="btn btn-success btn-md" name="startnow" style="float: left; margin-right: 1em"
+                        v-on:click="setTimeFromNow" >Start=Now</button>
+                <button type="button" class="btn btn-success btn-md" name="endnow" style="float: left; margin-right: 1em"
+                        v-on:click="setTimeToNow">End=Now</button>
+                <button type="submit" class="btn btn-primary btn-md"
+                        v-on:click="submitForm"  name="submit" style="float: left; margin-right: 1em">Create entry</button>
+                <div style="clear: both"></div>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+        <div class="well" >
+            <span v-text="message"></span>
+        </div>
+    </div>
+</template>
+
+<script>
+    import moment from "moment";
+    import axios from "axios";
+    import CategoriesWithProjects from "./CategoriesWithProjects";
+
+    export default {
+        name: "main-form",
+        components: {CategoriesWithProjects},
+        data: function() {
+        return {
+                    "entryData": {
+                        "id": 0,
+                        "entryDatum": moment().format('YYYY-MM-DD'),
+                        "startTime": moment().format('HH:mm'),
+                        "endTime": moment().format("HH:mm"),
+                        "projectIds": new Array(),
+                        "objectiveId": 0,
+                        "description": "Wandelen in het park",
+                    },
+                    "message": "Please, enter a timesheet entry"
+                };
+        },
+        methods: {
+            prjSelected: function(selection) {
+                this.entryData.projectIds = selection;
+                this.message = "Projects "+ this.entryData.projectIds +" selected";
+            },
+            objSelected: function(selection) {
+                this.entryData.objectiveId = selection;
+                this.message = "Objective "+ this.entryData.objectiveId +" selected";
+            },
+            setTimeFromNow: function() {
+                this.entryData.entryDatum = moment().format('YYYY-MM-DD');
+                this.entryData.startTime = moment().format('HH:mm');
+            },
+            setTimeToNow: function() {
+                this.entryData.entryDatum = moment().format('YYYY-MM-DD');
+                this.entryData.endTime = moment().format('HH:mm');
+            },
+            submitForm: function () {
+                const url = 'http://localhost:8080/timesheetrest/processEntry';
+                const headers = {
+                    withCredentials: true
+                }
+
+                axios.post(url, this.entryData, headers)
+                    .then( (response) => {
+                        console.log(response.status)
+                        console.log(response.data);
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                    });
+
+                this.message = "EntryData submitted: " + JSON.stringify(this.entryData);
+            }
+        },
+    }
+</script>
+
+<style scoped>
+    input {
+        margin-left: 0.5em;
+    }
+</style>
