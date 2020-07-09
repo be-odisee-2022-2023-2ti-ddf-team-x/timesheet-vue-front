@@ -1,7 +1,7 @@
 <template>
     <div class="table-striped well">
         <div class="row"> {{ entryDatum }} </div>
-        <div v-for="entry in this.entriesFromDate" v-bind:key="entry" class="row">
+        <div v-for="entry in this.entriesFromDate" v-bind:key="entry.id" class="row">
             <div class="col-md-1 text-left" >
                 {{ entry.dateTimeFrom | formatHhMm }}
             </div>

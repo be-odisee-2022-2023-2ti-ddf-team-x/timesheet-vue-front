@@ -3,7 +3,7 @@
         <input type="hidden" id="id" name="id" value="0">
 
         <categories-with-projects :data=$data   v-on:prj-selected="prjSelected"
-                                                v-on:obj-selected="objSelected" > </categories-with-projects>
+                                                v-on:obj-selected="objSelected" :updateKey="componentKey"> </categories-with-projects>
         <div class="form-group">
             <label for="entryDatum">Date:&nbsp;</label><input type="date" id="entryDatum" name="entryDatum"
                                              v-model="entryData.entryDatum" placeholder="2020-01-25" > &nbsp;
@@ -48,20 +48,32 @@
     export default {
         name: "main-form",
         components: {CategoriesWithProjects, EntriesTable},
-        data: function() {
-        return {
-                    "entryData": {
-                        "id": 0,
-                        "entryDatum": moment().format('YYYY-MM-DD'),
-                        "startTime": moment().format('HH:mm'),
-                        "endTime": moment().format("HH:mm"),
-                        "projectIds": [],
-                        "objectiveId": 0,
-                        "description": "Wandelen in het park",
-                    },
-                    "message": "Please, enter a timesheet entry",
-                    "componentKey": 0,
-                };
+        data() {
+            return {
+                        "entryData": {
+                            "id": 0,
+                            "entryDatum": moment().format('YYYY-MM-DD'),
+                            "startTime": moment().format('HH:mm'),
+                            "endTime": moment().format("HH:mm"),
+                            "projectIds": [],
+                            "objectiveId": 0,
+                            "description": "Wandelen in het park",
+                        },
+                        "message": "Please, enter a timesheet entry",
+                        "componentKey": 0,
+                    };
+        },
+        created() {
+            const url = 'http://localhost:8080/timesheetrest/entrydata';
+
+            axios.get(url, { withCredentials: true })
+                .then( (response) => {
+                    this.entryData = response.data;
+                    this.componentKey += 1;
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
         },
         methods: {
             prjSelected: function(selection) {
@@ -90,9 +102,9 @@
                     .then( (response) => {
                         this.message = "EntryData submitted: " + JSON.stringify(this.entryData) + "<br/>";
                         this.message += "Processing Result: " + response.data;
-                        console.log(response.status);
-                        console.log(response.data);
                         this.componentKey += 1;
+                        this.entryData.startTime = this.entryData.endTime;
+                        this.entryData.endTime = moment().format('HH:mm');
                     })
                     .catch(function (error) {
                         console.log(error)
