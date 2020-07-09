@@ -5,18 +5,18 @@
         <categories-with-projects :data=$data   v-on:prj-selected="prjSelected"
                                                 v-on:obj-selected="objSelected" > </categories-with-projects>
         <div class="form-group">
-            <label>Date:&nbsp;</label><input type="date" id="entryDatum" name="entryDatum"
+            <label for="entryDatum">Date:&nbsp;</label><input type="date" id="entryDatum" name="entryDatum"
                                              v-model="entryData.entryDatum" placeholder="2020-01-25" > &nbsp;
 
-            <label>From:&nbsp;</label><input type="time" id="startTime" name="startTime"
+            <label for="startTime">From:&nbsp;</label><input type="time" id="startTime" name="startTime"
                                              v-model="entryData.startTime" placeholder="15:12"> &nbsp;
 
-            <label>To:&nbsp;</label><input type="time" id="endTime" name="endTime"
+            <label for="endTime">To:&nbsp;</label><input type="time" id="endTime" name="endTime"
                                            v-model="entryData.endTime" placeholder="15:28"> &nbsp;
 
         </div>
         <div class="form-group">
-            <label>Description:&nbsp;</label><input type="text" style="width: 40em"
+            <label for="description">Description:&nbsp;</label><input type="text" style="width: 40em"
                                                     v-model="entryData.description" id="description" name="description"
                                                     placeholder="wandelen + winkelen + brood halen">
         </div>
@@ -33,8 +33,9 @@
             <div style="clear: both"></div>
         </div>
         <div class="well" >
-            <span v-text="message"></span>
+            <span v-html="message"></span>
         </div>
+        <entries-table v-bind:entryDatum="entryData.entryDatum" :updateKey="componentKey"></entries-table>
     </div>
 </template>
 
@@ -42,10 +43,11 @@
     import moment from "moment";
     import axios from "axios";
     import CategoriesWithProjects from "./CategoriesWithProjects";
+    import EntriesTable from "./EntriesTable";
 
     export default {
         name: "main-form",
-        components: {CategoriesWithProjects},
+        components: {CategoriesWithProjects, EntriesTable},
         data: function() {
         return {
                     "entryData": {
@@ -53,11 +55,12 @@
                         "entryDatum": moment().format('YYYY-MM-DD'),
                         "startTime": moment().format('HH:mm'),
                         "endTime": moment().format("HH:mm"),
-                        "projectIds": new Array(),
+                        "projectIds": [],
                         "objectiveId": 0,
                         "description": "Wandelen in het park",
                     },
-                    "message": "Please, enter a timesheet entry"
+                    "message": "Please, enter a timesheet entry",
+                    "componentKey": 0,
                 };
         },
         methods: {
@@ -81,18 +84,21 @@
                 const url = 'http://localhost:8080/timesheetrest/processEntry';
                 const headers = {
                     withCredentials: true
-                }
+                };
 
                 axios.post(url, this.entryData, headers)
                     .then( (response) => {
-                        console.log(response.status)
+                        this.message = "EntryData submitted: " + JSON.stringify(this.entryData) + "<br/>";
+                        this.message += "Processing Result: " + response.data;
+                        console.log(response.status);
                         console.log(response.data);
+                        this.componentKey += 1;
                     })
                     .catch(function (error) {
                         console.log(error)
                     });
 
-                this.message = "EntryData submitted: " + JSON.stringify(this.entryData);
+
             }
         },
     }
