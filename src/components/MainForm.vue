@@ -67,10 +67,9 @@
             let url;
 
             if (this.$route.params.entryId != null) { // edit existing
-                // TODO BACKEND API MOET AANGEPAST - VOORLOPIG SAME AS NEW
-                url = 'http://localhost:8080/timesheetrest/entrydata';
+                url = 'http://localhost:8080/timesheetrest/editentrydata?id='+this.$route.params.entryId;
             } else { // create new
-                url = 'http://localhost:8080/timesheetrest/entrydata';
+                url = 'http://localhost:8080/timesheetrest/newentrydata';
             }
 
             axios.get(url, { withCredentials: true })

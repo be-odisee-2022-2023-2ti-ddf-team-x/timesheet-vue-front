@@ -1,7 +1,8 @@
 <template>
     <div class="table-striped well">
         <div class="row"> {{ entryDatum }} </div>
-        <div v-for="entry in this.entriesFromDate" v-bind:key="entry.id" class="row">
+        <div v-for="entry in this.entriesFromDate" v-bind:key="entry.id" class="row"
+                v-on:click="showEntryDetails(entry.id)" >
             <div class="col-md-1 text-left" >
                 {{ entry.dateTimeFrom | formatHhMm }}
             </div>
@@ -62,6 +63,12 @@
             updateKey: function () {
                 var result = getEntriesFromDate(this.entryDatum);
                 result.then((res) => this.entriesFromDate = res)
+            }
+        },
+
+        methods: {
+            showEntryDetails(entryid) {
+                window.location.href = "/timesheet/"+entryid;
             }
         },
 
