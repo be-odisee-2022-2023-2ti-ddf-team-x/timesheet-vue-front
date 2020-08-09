@@ -71,7 +71,7 @@
                     this.categoriesWithProjects = response.data;
                     for ( let categoryId in this.categoriesWithProjects ) {
                         this.categories.push(categoryId);
-                        this.projectSelectedInCategory.push(0);
+                        // NOT NEEDED this.projectSelectedInCategory.push(0);
                     }
                 });
 

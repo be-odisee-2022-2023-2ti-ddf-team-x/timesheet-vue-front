@@ -64,7 +64,14 @@
                     };
         },
         created() {
-            const url = 'http://localhost:8080/timesheetrest/entrydata';
+            let url;
+
+            if (this.$route.params.entryId != null) { // edit existing
+                // TODO BACKEND API MOET AANGEPAST - VOORLOPIG SAME AS NEW
+                url = 'http://localhost:8080/timesheetrest/entrydata';
+            } else { // create new
+                url = 'http://localhost:8080/timesheetrest/entrydata';
+            }
 
             axios.get(url, { withCredentials: true })
                 .then( (response) => {
