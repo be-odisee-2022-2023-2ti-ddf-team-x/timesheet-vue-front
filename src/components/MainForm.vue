@@ -83,17 +83,25 @@
             axios.get(url, { withCredentials: true })
                 .then( (response) => {
                     this.entryData = response.data;
-                    // console.log("DEBUG - Response status is good: "+response.status);
                     if (response.status == 204) {
-                        // not found
-                        this.message = "Entry "+this.$route.params.entryId+" was not found";
+                        // entry not found
+                        this.message = "Entry with id "+this.$route.params.entryId+" was not found";
                         this.newForm();
                     }
                     else
+                        // found entry - so other components can be updated accordingly
                         this.componentKey += 1;
                 })
                 .catch( (error) => {
-                    console.log(error.message);
+                    if (error.response.status == 403) {
+                        // entry forbidden for user
+                        this.message = "Entry with id "+this.$route.params.entryId+" is forbidden";
+                        this.newForm();
+                    } else {
+                        // some other problem
+                        console.log("Yes! There is something rotten in the state of Denmark!");
+                        console.log(error.message);
+                    }
                 });
         },
         methods: {
@@ -147,7 +155,15 @@
                         this.newForm();
                     })
                     .catch(function (error) {
-                        console.log(error)
+                        if (error.response.status == 403) {
+                            // entry forbidden for user
+                            this.message = "Entry with id "+this.$route.params.entryId+" is forbidden";
+                            this.newForm();
+                        } else {
+                            // some other problem
+                            console.log("Yes! There is something rotten in the state of Denmark!");
+                            console.log(error.message);
+                        }
                     });
 
             },
