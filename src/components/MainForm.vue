@@ -83,10 +83,17 @@
             axios.get(url, { withCredentials: true })
                 .then( (response) => {
                     this.entryData = response.data;
-                    this.componentKey += 1;
+                    // console.log("DEBUG - Response status is good: "+response.status);
+                    if (response.status == 204) {
+                        // not found
+                        this.message = "Entry "+this.$route.params.entryId+" was not found";
+                        this.newForm();
+                    }
+                    else
+                        this.componentKey += 1;
                 })
-                .catch(function (error) {
-                    console.log(error)
+                .catch( (error) => {
+                    console.log(error.message);
                 });
         },
         methods: {
@@ -138,15 +145,6 @@
                         this.message = response.data;
                         this.componentKey += 1;
                         this.newForm();
-                        /*
-                        this.entryData.startTime = this.entryData.endTime;
-                        this.entryData.endTime = moment().format('HH:mm');
-                        if (this.entryData.id != 0) {
-                            this.entryData.id = 0; // klaar voor nieuwe entry nu
-                            this.newForm();
-                        }
-
-                         */
                     })
                     .catch(function (error) {
                         console.log(error)
