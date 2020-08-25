@@ -22,12 +22,19 @@
         </div>
         <div class="form-group">
             <div style="float: left">
-                <button type="button" class="btn btn-success btn-md" name="startnow" style="float: left; margin-right: 1em"
+                <button v-if="entryData.id==0" type="button" class="btn btn-success btn-md"
+                        name="startnow" style="float: left; margin-right: 1em"
                         v-on:click="setTimeFromNow" >Start=Now</button>
                 <button type="button" class="btn btn-success btn-md" name="endnow" style="float: left; margin-right: 1em"
                         v-on:click="setTimeToNow">End=Now</button>
-                <button type="submit" class="btn btn-primary btn-md"
+                <button v-if="entryData.id==0" type="submit" class="btn btn-primary btn-md"
                         v-on:click="submitForm"  name="submit" style="float: left; margin-right: 1em">Create entry</button>
+                <button v-if="entryData.id!=0" type="submit" class="btn btn-primary btn-md"
+                        v-on:click="submitForm"  name="update" style="float: left; margin-right: 1em">Update entry</button>
+                <button v-if="entryData.id!=0" type="button" class="btn btn-danger btn-md"
+                        v-on:click="deleteEntry"  name="delete" style="float: left; margin-right: 1em">Delete entry</button>
+                <button v-if="entryData.id!=0" type="button" class="btn btn-warning btn-md"
+                        v-on:click="newForm"  name="cancel" style="float: left; margin-right: 1em">Cancel</button>
                 <div style="clear: both"></div>
             </div>
             <div style="clear: both"></div>
@@ -68,6 +75,7 @@
 
             if (this.$route.params.entryId != null) { // edit existing
                 url = 'http://localhost:8080/timesheetrest/editentrydata?id='+this.$route.params.entryId;
+                this.message = "Update or Delete this entry please - or Cancel";
             } else { // create new
                 url = 'http://localhost:8080/timesheetrest/newentrydata';
             }
@@ -106,17 +114,48 @@
 
                 axios.post(url, this.entryData, headers)
                     .then( (response) => {
-                        this.message = "EntryData submitted: " + JSON.stringify(this.entryData) + "<br/>";
-                        this.message += "Processing Result: " + response.data;
+                        this.message = response.data;
                         this.componentKey += 1;
                         this.entryData.startTime = this.entryData.endTime;
                         this.entryData.endTime = moment().format('HH:mm');
+                        if (this.entryData.id != 0) {
+                            this.entryData.id = 0; // klaar voor nieuwe entry nu
+                            this.newForm();
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                    });
+            },
+            deleteEntry: function () {
+                const url = 'http://localhost:8080/timesheetrest/deleteEntry';
+                const headers = {
+                    withCredentials: true
+                };
+
+                axios.post(url, this.entryData, headers)
+                    .then( (response) => {
+                        this.message = response.data;
+                        this.componentKey += 1;
+                        this.newForm();
+                        /*
+                        this.entryData.startTime = this.entryData.endTime;
+                        this.entryData.endTime = moment().format('HH:mm');
+                        if (this.entryData.id != 0) {
+                            this.entryData.id = 0; // klaar voor nieuwe entry nu
+                            this.newForm();
+                        }
+
+                         */
                     })
                     .catch(function (error) {
                         console.log(error)
                     });
 
-
+            },
+            newForm: function () {
+                // redirect for newEntryData but after some delay
+                setTimeout( () => this.$router.push({ name : 'Timesheet2'}, () => { this.$router.go() } ), 1200);
             }
         },
     }
