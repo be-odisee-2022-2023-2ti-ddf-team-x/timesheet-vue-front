@@ -22,19 +22,19 @@
         </div>
         <div class="form-group">
             <div style="float: left">
-                <button v-if="entryData.id==0" type="button" class="btn btn-success btn-md"
+                <button v-if="entryData.id===0" type="button" class="btn btn-success btn-md"
                         name="startnow" style="float: left; margin-right: 1em"
                         v-on:click="setTimeFromNow" >Start=Now</button>
                 <button type="button" class="btn btn-success btn-md" name="endnow" style="float: left; margin-right: 1em"
                         v-on:click="setTimeToNow">End=Now</button>
-                <button v-if="entryData.id==0" type="submit" class="btn btn-primary btn-md"
+                <button v-if="entryData.id===0" type="submit" class="btn btn-primary btn-md"
                         v-on:click="submitForm"  name="submit" style="float: left; margin-right: 1em">Create entry</button>
-                <button v-if="entryData.id!=0" type="submit" class="btn btn-primary btn-md"
-                        v-on:click="submitForm"  name="update" style="float: left; margin-right: 1em">Update entry</button>
-                <button v-if="entryData.id!=0" type="button" class="btn btn-danger btn-md"
-                        v-on:click="deleteEntry"  name="delete" style="float: left; margin-right: 1em">Delete entry</button>
-                <button v-if="entryData.id!=0" type="button" class="btn btn-warning btn-md"
-                        v-on:click="newForm"  name="cancel" style="float: left; margin-right: 1em">Cancel</button>
+                <button v-if="entryData.id!==0" type="submit" class="btn btn-primary btn-md"
+                        v-on:click="submitForm" name="update" style="float: left; margin-right: 1em">Update entry</button>
+                <button v-if="entryData.id!==0" type="button" class="btn btn-danger btn-md"
+                        v-on:click="deleteEntry" name="delete" style="float: left; margin-right: 1em">Delete entry</button>
+                <button v-if="entryData.id!==0" type="button" class="btn btn-warning btn-md"
+                        v-on:click="newForm" name="cancel" style="float: left; margin-right: 1em">Cancel</button>
                 <div style="clear: both"></div>
             </div>
             <div style="clear: both"></div>
@@ -83,7 +83,7 @@
             axios.get(url, { withCredentials: true })
                 .then( (response) => {
                     this.entryData = response.data;
-                    if (response.status == 204) {
+                    if (response.status === 204) {
                         // entry not found
                         this.message = "Entry with id "+this.$route.params.entryId+" was not found";
                         this.newForm();
@@ -93,7 +93,7 @@
                         this.componentKey += 1;
                 })
                 .catch( (error) => {
-                    if (error.response.status == 403) {
+                    if (error.response.status === 403) {
                         // entry forbidden for user
                         this.message = "Entry with id "+this.$route.params.entryId+" is forbidden";
                         this.newForm();
@@ -133,7 +133,7 @@
                         this.componentKey += 1;
                         this.entryData.startTime = this.entryData.endTime;
                         this.entryData.endTime = moment().format('HH:mm');
-                        if (this.entryData.id != 0) {
+                        if (this.entryData.id !== 0) {
                             this.entryData.id = 0; // klaar voor nieuwe entry nu
                             this.newForm();
                         }
@@ -155,9 +155,11 @@
                         this.newForm();
                     })
                     .catch(function (error) {
-                        if (error.response.status == 403) {
+                        if (error.response.status === 403) {
                             // entry forbidden for user
+                            // noinspection JSPotentiallyInvalidUsageOfThis
                             this.message = "Entry with id "+this.$route.params.entryId+" is forbidden";
+                            // noinspection JSPotentiallyInvalidUsageOfThis
                             this.newForm();
                         } else {
                             // some other problem

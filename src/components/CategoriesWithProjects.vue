@@ -52,6 +52,7 @@
         methods: {
             onChangeProject:function(categoryIndex, event){
                 for (var categoryId in this.projectSelectedInCategory) {
+                    // noinspection JSUnfilteredForInLoop
                     this.projectSelectedInCategory[categoryId] = +0;
                 }
                 this.projectSelectedInCategory[categoryIndex] = +event.target.value;
@@ -69,9 +70,13 @@
             axios.get(url, { withCredentials: true })
                 .then( (response) => {
                     this.categoriesWithProjects = response.data;
+                    // for the first entry there is no project selected previously, so we will build that array
+                    if (this.projectSelectedInCategory == null) {
+                        this.projectSelectedInCategory = [];
+                    }
                     for ( let categoryId in this.categoriesWithProjects ) {
                         this.categories.push(categoryId);
-                        // this.projectSelectedInCategory.push(0); // NEEDED Anyway?
+                        this.projectSelectedInCategory.push(0); // building that array too
                     }
                 });
 
