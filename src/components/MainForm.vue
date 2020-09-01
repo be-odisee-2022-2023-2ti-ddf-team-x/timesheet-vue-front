@@ -16,9 +16,9 @@
 
         </div>
         <div class="form-group">
-            <label for="description">Description:&nbsp;</label><input type="text" style="width: 40em"
-                                                    v-model="entryData.description" id="description" name="description"
-                                                    placeholder="wandelen + winkelen + brood halen">
+            <label for="description">Description:&nbsp;</label><input type="text" style="width: 40em" required
+                                                    placeholder="Please provide a description"
+                                                    v-model="entryData.description" id="description" name="description">
         </div>
         <div class="form-group">
             <div style="float: left">
@@ -122,6 +122,7 @@
                 this.entryData.endTime = moment().format('HH:mm');
             },
             submitForm: function () {
+
                 const url = 'http://localhost:8080/timesheetrest/processEntry';
                 const headers = {
                     withCredentials: true
