@@ -1,5 +1,6 @@
 <template>
     <div id="categorieswithprojects">
+        <h1>Welcome to Timesheet of {{ this.user["firstName"] }} {{ this.user["lastName"] }}</h1>
         <div class="well">
             <!-- OVHD, NETW, PROSP, FULF, REND, TRAVEL -->
 
@@ -39,7 +40,8 @@
                 "categories": [],
                 "projectSelectedInCategory": [],
                 "objectives": {},
-                "objectiveId": 0
+                "objectiveId": 0,
+                "user": {}
             }
         },
 
@@ -78,6 +80,7 @@
                         this.categories.push(categoryId);
                         this.projectSelectedInCategory.push(0); // building that array too
                     }
+                    this.user = this.categoriesWithProjects[Object.keys(this.categoriesWithProjects)[0]][0]["user"];
                 });
 
             url = 'http://localhost:8080/timesheetrest/objectives';
